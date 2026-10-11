@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Điểm danh QNU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--ink:#1b2a2f;--muted:#5d6f75;--line:#d9e1e3;--bg:#eef2f2;--card:#fff;--accent:#0b6e6e;--accent-d:#085656;--danger:#b3261e;--ok:#1b7a3d}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding:20px 16px 48px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+header.top h1{margin:0;font-size:22px}
+.badge{font-size:13px;color:var(--muted)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
+.card h2{margin:0 0 14px;font-size:17px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:720px){.grid{grid-template-columns:1fr}}
+label{display:block;font-weight:500;font-size:14px;margin:0 0 4px}
+.field{margin-bottom:12px}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+input,select{width:100%;padding:10px;border:1px solid #b9c5c8;border-radius:8px;font:inherit;background:#fff}
+input:focus,select:focus,button:focus-visible{outline:3px solid #8fd3d3;outline-offset:1px}
+button{font:inherit;font-weight:700;border:0;border-radius:8px;padding:11px 16px;background:var(--accent);color:#fff;cursor:pointer;width:100%}
+button:hover{background:var(--accent-d)}
+button:disabled{opacity:.55;cursor:not-allowed}
+button.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
+button.ghost:hover{background:#e6f3f3}
+button.danger{background:var(--danger)}
+button.excel{background:var(--ok)}
+.msg{margin-top:10px;font-size:14px;font-weight:500;min-height:20px}
+.msg.err{color:var(--danger)}.msg.ok{color:var(--ok)}
+.hint{font-size:13px;color:var(--muted);margin-top:6px}
+#qrbox{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px}
+#qrcode{padding:10px;background:#fff;border:1px solid var(--line);border-radius:8px;min-height:50px}
+.tablewrap{max-height:380px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
+th{background:var(--accent);color:#fff;position:sticky;top:0}
+.hidden{display:none!important}
+/* Sinh viên */
+.sv{max-width:440px;margin:0 auto}
+.sv .info{background:#e6f3f3;border-radius:8px;padding:12px;margin-bottom:16px;font-size:14px}
+.sv .info b{display:block;font-size:17px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ========== GIAO DIỆN SINH VIÊN (mở bằng QR) ========== -->
+<div id="viewSV" class="hidden sv">
+  <header class="top"><h1>Điểm danh QNU</h1></header>
+  <div class="card">
+    <div class="info" id="svInfo">Đang kiểm tra mã QR...</div>
+    <form id="formSV" class="hidden">
+      <div class="field">
+        <label for="svTen">Họ và tên</label>
+        <input id="svTen" type="text" autocomplete="name" placeholder="Nguyễn Văn A" required>
+      </div>
+      <button type="submit" id="btnSV">Điểm danh</button>
+    </form>
+    <p id="svMsg" class="msg"></p>
+  </div>
+</div>
+
+<!-- ========== ĐĂNG NHẬP QUẢN LÝ ========== -->
+<div id="viewLogin" class="hidden sv">
+  <header class="top"><h1>Quản lý điểm danh</h1></header>
+  <div class="card">
+    <form id="formLogin">
+      <div class="field">
+        <label for="mk">Mã quản lý</label>
+        <input id="mk" type="password" required>
+      </div>
+      <button type="submit">Đăng nhập</button>
+      <p id="loginMsg" class="msg err"></p>
+    </form>
+  </div>
+</div>
+
+<!-- ========== GIAO DIỆN QUẢN LÝ ========== -->
+<div id="viewQL" class="hidden">
+  <header class="top">
+    <h1>Quản lý điểm danh QNU</h1>
+    <span class="badge" id="qlBadge"></span>
+  </header>
+
+  <div class="card">
+    <h2>Tạo buổi học</h2>
+    <form id="formTao">
+      <div class="grid">
+        <div>
+          <div class="field"><label for="tenMon">Tên môn học</label>
+            <input id="tenMon" type="text" placeholder="VD: Lập trình Web" required></div>
+          <div class="field"><label>Tiết học</label>
+            <div class="row">
+              <select id="tietTu" aria-label="Từ tiết"></select>
+              <select id="tietDen" aria-label="Đến tiết"></select>
+            </div></div>
+        </div>
+        <div>
+          <div class="field"><label for="banKinh">Bán kính cho phép (mét)</label>
+            <input id="banKinh" type="number" min="20" max="1000" value="100" required></div>
+          <div class="field"><label>Vị trí lớp học</label>
+            <button type="button" id="btnViTri" class="ghost">Lấy vị trí hiện tại của tôi</button>
+            <p class="hint" id="viTriInfo">Chưa lấy vị trí. Hãy bấm khi bạn đang ở trong lớp.</p></div>
+        </div>
+      </div>
+      <button type="submit">Tạo buổi học</button>
+      <p id="taoMsg" class="msg"></p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Buổi học đang quản lý</h2>
+    <div class="field">
+      <select id="chonBuoi" aria-label="Chọn buổi học"><option value="">-- Chọn buổi học --</option></select>
+    </div>
+    <div id="chiTiet" class="hidden">
+      <div class="grid">
+        <div>
+          <button id="btnQR">Bật mã QR</button>
+          <button id="btnDungQR" class="danger hidden">Dừng mã QR</button>
+          <div id="qrbox" class="hidden">
+            <div id="qrcode"></div>
+            <div class="hint" id="qrHint"></div>
+          </div>
+          <p class="hint" id="fileWarn"></p>
+        </div>
+        <div>
+          <p class="badge" id="tomTat"></p>
+          <button id="btnExcel" class="excel" disabled>Tải file Excel (.xlsx)</button>
+        </div>
+      </div>
+      <h2 style="margin-top:18px">Danh sách đã điểm danh <span class="badge" id="soLuong"></span></h2>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>STT</th><th>Tên</th><th>Tiết học</th><th>Thời gian</th><th>Cách lớp</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
