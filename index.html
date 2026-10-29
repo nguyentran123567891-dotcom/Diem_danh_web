@@ -8,13 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--ink:#1b2a2f;--muted:#5d6f75;--line:#d9e1e3;--bg:#eef2f2;--card:#fff;--accent:#0b6e6e;--accent-d:#085656;--danger:#b3261e;--ok:#1b7a3d}
+:root{--ink:#1b2a2f;--muted:#5d6f75;--line:#d9e1e3;--bg:#eef2f2;--card:#fff;--accent:#0b6e6e;--accent-d:#085656;--danger:#b3261e;--ok:#1b7a3d;--late:#b26a00;--leave:#1a5fb4}
 *{box-sizing:border-box}
 body{margin:0;font-family:"Be Vietnam Pro",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
 .wrap{max-width:960px;margin:0 auto;padding:20px 16px 48px}
-header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
 header.top h1{margin:0;font-size:22px}
 .badge{font-size:13px;color:var(--muted)}
+a.badge{color:var(--accent);text-decoration:none;font-weight:500}
 .card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px;margin-bottom:16px}
 .card h2{margin:0 0 14px;font-size:17px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -22,79 +23,166 @@ header.top h1{margin:0;font-size:22px}
 label{display:block;font-weight:500;font-size:14px;margin:0 0 4px}
 .field{margin-bottom:12px}
 .row{display:flex;gap:10px}.row>*{flex:1}
-input,select{width:100%;padding:10px;border:1px solid #b9c5c8;border-radius:8px;font:inherit;background:#fff}
-input:focus,select:focus,button:focus-visible{outline:3px solid #8fd3d3;outline-offset:1px}
+input,select,textarea{width:100%;padding:10px;border:1px solid #b9c5c8;border-radius:8px;font:inherit;background:#fff}
+textarea{resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid #8fd3d3;outline-offset:1px}
 button,a.btn{display:block;text-align:center;text-decoration:none;font:inherit;font-weight:700;border:0;border-radius:8px;padding:11px 16px;background:var(--accent);color:#fff;cursor:pointer;width:100%;margin-top:8px}
 button:hover,a.btn:hover{background:var(--accent-d)}
 button:disabled{opacity:.55;cursor:not-allowed}
 button.ghost,a.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent)}
 button.ghost:hover,a.ghost:hover{background:#e6f3f3}
 button.danger{background:var(--danger)}
+button.danger.ghost{background:#fff;color:var(--danger);border:1px solid var(--danger)}
 .msg{margin-top:10px;font-size:14px;font-weight:500;min-height:20px}
 .msg.err{color:var(--danger)}.msg.ok{color:var(--ok)}
 .hint{font-size:13px;color:var(--muted);margin-top:6px}
-#qrbox{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px}
-#qrcode{padding:10px;background:#fff;border:1px solid var(--line);border-radius:8px;min-height:50px}
-.tablewrap{max-height:420px;overflow:auto;border:1px solid var(--line);border-radius:8px}
-table{width:100%;border-collapse:collapse;font-size:14px}
-th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line)}
-th{background:var(--accent);color:#fff;position:sticky;top:0}
-tr.vang td{color:#8a979b}
 .hidden{display:none!important}
-.sv{max-width:440px;margin:0 auto}
+.sv{max-width:480px;margin:0 auto}
 .info{background:#e6f3f3;border-radius:8px;padding:12px;margin-bottom:16px;font-size:14px}
 .info b{display:block;font-size:17px}
+.foot{text-align:center;font-size:13px;margin-top:20px}
+.foot a{color:var(--muted)}
+
+/* Danh sách lớp hôm nay (sinh viên) */
+.lop-list{display:flex;flex-direction:column;gap:8px}
+button.lopcard{margin:0;text-align:left;background:#fff;color:var(--ink);border:1px solid var(--line);font-weight:500;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:10px}
+button.lopcard:hover{background:#f3f8f8}
+button.lopcard.chon{border:2px solid var(--accent);background:#e6f3f3}
+button.lopcard b{display:block;font-size:15px}
+button.lopcard small{color:var(--muted);font-weight:400}
+.chip{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;white-space:nowrap;background:#e8eeef;color:var(--muted)}
+.chip.mo{background:#dff3e6;color:var(--ok)}
+.chip.xong{background:#eee;color:#888}
+
+/* 4 ô điểm danh */
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px}
+.actions button{margin:0;padding:16px 10px;font-size:17px}
+button.b-comat{background:var(--ok)}button.b-comat:hover{background:#15632f}
+button.b-comat.muon{background:var(--late)}button.b-comat.muon:hover{background:#8f5500}
+button.b-vang{background:#fff;color:var(--danger);border:2px solid var(--danger)}
+button.b-vang:hover{background:#fdecea}
+
+/* Quản lý */
+#qrbox{display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px}
+#qrcode{padding:10px;background:#fff;border:1px solid var(--line);border-radius:8px;min-height:50px}
+.tablewrap{max-height:520px;overflow:auto;border:1px solid var(--line);border-radius:8px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{background:var(--accent);color:#fff;position:sticky;top:0;z-index:1}
+td select{padding:6px;font-size:13px;min-width:150px}
+tr.t-R td:nth-child(3) select{border-color:var(--ok);color:var(--ok)}
+tr.t-T td:nth-child(3) select{border-color:var(--late);color:var(--late)}
+tr.t-P td:nth-child(3) select{border-color:var(--leave);color:var(--leave)}
+tr.t-KP td:nth-child(3) select{border-color:var(--danger);color:var(--danger)}
+tr.t-N td{color:#8a979b}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 12px}
+.stat{font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;background:#e8eeef}
+.stat.R{background:#dff3e6;color:var(--ok)}.stat.T{background:#fdf0d8;color:var(--late)}
+.stat.P{background:#dde9fa;color:var(--leave)}.stat.KP{background:#fbdedb;color:var(--danger)}
+.sep{display:flex;gap:10px}.sep>*{flex:1}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<!-- Sinh viên (mở bằng QR) -->
+<!-- ====================== GIAO DIỆN ĐIỂM DANH (KHÔNG CẦN MÃ) ====================== -->
 <div id="viewSV" class="hidden sv">
-  <header class="top"><h1>Điểm danh QNU</h1></header>
+  <header class="top"><h1>Điểm danh QNU</h1><span class="badge" id="svClock"></span></header>
+
   <div class="card">
-    <div class="info" id="svInfo">Đang kiểm tra mã QR...</div>
-    <form id="formSV" class="hidden">
+    <h2>Lớp học hôm nay</h2>
+    <div id="svLop" class="lop-list"></div>
+    <p id="svLopMsg" class="msg"></p>
+  </div>
+
+  <div class="card hidden" id="svCard">
+    <div class="info" id="svInfo"></div>
+    <div id="svForm">
       <div class="field">
-        <label for="svTen">Chọn tên của bạn</label>
-        <select id="svTen" required></select>
+        <label for="svTen">Họ và tên</label>
+        <select id="svTen"></select>
       </div>
-      <button type="submit" id="btnSV">Điểm danh</button>
-    </form>
+      <div class="actions">
+        <button type="button" id="btnCoMat" class="b-comat">Có mặt</button>
+        <button type="button" id="btnVang" class="b-vang">Vắng</button>
+      </div>
+      <p class="hint" id="svHint"></p>
+      <div id="boxLyDo" class="hidden">
+        <div class="field">
+          <label for="lyDo">Lý do vắng (gửi cho người quản lý)</label>
+          <textarea id="lyDo" rows="3" maxlength="300" placeholder="VD: Ốm, có giấy khám bệnh / Việc gia đình..."></textarea>
+        </div>
+        <div class="sep">
+          <button type="button" id="btnGuiVang" class="danger">Gửi báo vắng</button>
+          <button type="button" id="btnHuyVang" class="ghost">Hủy</button>
+        </div>
+      </div>
+    </div>
     <p id="svMsg" class="msg"></p>
   </div>
+
+  <p class="foot"><a href="?quanly">Dành cho quản lý</a></p>
 </div>
 
-<!-- Đăng nhập quản lý -->
+<!-- ====================== ĐĂNG NHẬP QUẢN LÝ ====================== -->
 <div id="viewLogin" class="hidden sv">
   <header class="top"><h1>Quản lý điểm danh</h1></header>
   <div class="card">
     <form id="formLogin">
-      <div class="field"><label for="mk">Mã quản lý</label><input id="mk" type="password" required></div>
+      <div class="field"><label for="mk">Mã quản lý</label><input id="mk" type="password" autocomplete="current-password" required></div>
       <button type="submit" id="btnLogin">Đăng nhập</button>
       <p id="loginMsg" class="msg err"></p>
     </form>
   </div>
+  <p class="foot"><a id="linkVeSV" href="./">← Về trang điểm danh</a></p>
 </div>
 
-<!-- Quản lý -->
+<!-- ====================== GIAO DIỆN QUẢN LÝ ====================== -->
 <div id="viewQL" class="hidden">
-  <header class="top"><h1>Quản lý điểm danh QNU</h1><span class="badge" id="badgeSheet"></span></header>
+  <header class="top">
+    <h1>Quản lý điểm danh QNU</h1>
+    <span><a class="badge" id="linkVeSV2" href="./">Trang điểm danh của sinh viên</a> · <a class="badge" href="#" id="btnDangXuat">Đăng xuất</a></span>
+  </header>
 
   <div class="card">
-    <h2>Tạo buổi học</h2>
+    <h2>Buổi học</h2>
+    <p class="hint" style="margin:-8px 0 12px">Buổi theo thời khóa biểu được tạo tự động mỗi ngày. Chọn buổi để xem danh sách.</p>
+    <div class="field"><select id="chonBuoi" aria-label="Chọn buổi học"><option value="">-- Chọn buổi học --</option></select></div>
+
+    <div id="chiTiet" class="hidden">
+      <p class="badge" id="tomTat"></p>
+      <div class="stats" id="thongKe"></div>
+      <div class="grid" style="margin-bottom:12px">
+        <a id="linkSheet" class="btn ghost" target="_blank" rel="noopener" style="margin-top:0">Mở Google Sheet</a>
+        <button id="btnHuy" class="danger ghost" style="margin-top:0">Hủy buổi này</button>
+      </div>
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>STT</th><th>Họ và tên</th><th>Trạng thái</th><th>Thời gian</th><th>Cách lớp</th><th>Lý do</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <p class="hint">R = Có mặt · T = Đi trễ · P = Vắng có phép · KP = Vắng không phép. Ô trống sẽ tự thành KP sau khi buổi học kết thúc. Có thể đổi trạng thái từng sinh viên ở cột "Trạng thái".</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Mở buổi học thủ công (học bù / ngoài kế hoạch)</h2>
     <form id="formTao">
       <div class="grid">
         <div>
-          <div class="field"><label for="tenMon">Tên môn học</label><input id="tenMon" type="text" placeholder="VD: Lập trình Web" required></div>
+          <div class="field"><label for="tenMon">Tên môn học</label>
+            <input id="tenMon" type="text" list="dsMon" placeholder="VD: Học bù Toán rời rạc" required><datalist id="dsMon"></datalist></div>
+          <div class="field"><label for="ngayHoc">Ngày học</label><input id="ngayHoc" type="date" required></div>
           <div class="field"><label>Tiết học</label>
             <div class="row"><select id="tietTu" aria-label="Từ tiết"></select><select id="tietDen" aria-label="Đến tiết"></select></div></div>
         </div>
         <div>
-          <div class="field"><label for="banKinh">Bán kính cho phép (mét)</label><input id="banKinh" type="number" min="20" max="1000" value="100" required></div>
-          <div class="field"><label>Vị trí lớp học</label>
-            <button type="button" id="btnViTri" class="ghost">Lấy vị trí hiện tại của tôi</button>
-            <p class="hint" id="viTriInfo">Chưa lấy vị trí. Hãy bấm khi bạn đang ở trong lớp.</p></div>
+          <div class="field"><label for="banKinh">Bán kính cho phép (mét)</label><input id="banKinh" type="number" min="20" max="1000" value="200" required></div>
+          <div class="field"><label for="phongSel">Vị trí lớp học</label>
+            <select id="phongSel"></select>
+            <button type="button" id="btnViTri" class="ghost hidden">Lấy vị trí hiện tại của tôi</button>
+            <p class="hint hidden" id="viTriInfo"></p></div>
         </div>
       </div>
       <button type="submit" id="btnTao">Tạo buổi học</button>
@@ -103,27 +191,12 @@ tr.vang td{color:#8a979b}
   </div>
 
   <div class="card">
-    <h2>Buổi học đang quản lý</h2>
-    <div class="field"><select id="chonBuoi" aria-label="Chọn buổi học"><option value="">-- Chọn buổi học --</option></select></div>
-    <div id="chiTiet" class="hidden">
-      <div class="grid">
-        <div>
-          <button id="btnQR">Bật mã QR</button>
-          <button id="btnDungQR" class="danger hidden">Dừng mã QR</button>
-          <div id="qrbox" class="hidden"><div id="qrcode"></div><div class="hint" id="qrHint"></div></div>
-        </div>
-        <div>
-          <p class="badge" id="tomTat"></p>
-          <a id="linkSheet" class="btn ghost" target="_blank" rel="noopener">Mở Google Sheet</a>
-        </div>
-      </div>
-      <h2 style="margin-top:18px">Danh sách điểm danh <span class="badge" id="soLuong"></span></h2>
-      <div class="tablewrap">
-        <table>
-          <thead><tr><th>STT</th><th>Họ và tên</th><th>Thời gian</th><th>Cách lớp</th></tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
+    <h2>Link / mã QR cho sinh viên</h2>
+    <p class="hint" style="margin:-8px 0 12px">Sinh viên không cần mã. Gửi link này hoặc chiếu mã QR (cố định, không đổi).</p>
+    <div class="grid">
+      <div><input id="linkSV" type="text" readonly><button id="btnChepLink" class="ghost">Sao chép link</button></div>
+      <div><button id="btnQR" class="ghost" style="margin-top:0">Hiện mã QR</button>
+        <div id="qrbox" class="hidden"><div id="qrcode"></div></div></div>
     </div>
   </div>
 </div>
