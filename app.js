@@ -1,5 +1,5 @@
 // Dán địa chỉ Web app của Google Apps Script vào đây (xem hướng dẫn). Đây không phải mật khẩu.
-const API_URL = "https://script.google.com/macros/s/AKfycbyE_zTtOQX3s0yobGbhJ94FsdCljUENyjUQHsrBjkcu999CZF2y1E7Ow3kJlVnj21Zv/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbwyselXqe_RDmOq7pSPVYJ_LQ9x_neo3Qwp_aKQDC20GqMQGWkXaib0qRVFzrmJz1nm/exec";
 
 const TZ = "Asia/Ho_Chi_Minh";
 const $ = (id) => document.getElementById(id);
