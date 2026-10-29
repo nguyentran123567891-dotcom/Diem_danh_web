@@ -141,7 +141,7 @@ function khoiTaoSinhVien(buoiUuTien) {
   // Nút "Có mặt" tự đổi thành "Đi trễ" khi quá 15 phút kể từ giờ bắt đầu
   function capNhatNut() {
     if (!lop) return;
-    const st = trangThai(lop), muon = bay() - lop.batDau > muonSauPhut * 60000;
+    const st = trangThai(lop), muon = bay() - lop.batDau >= (muonSauPhut + 1) * 60000;   // 7h00 -> hết 7h15 vẫn "Có mặt", 7h16 mới "Đi trễ"
     const nut = $("btnCoMat");
     nut.textContent = muon ? "Đi trễ" : "Có mặt";
     nut.classList.toggle("muon", muon);
@@ -152,8 +152,8 @@ function khoiTaoSinhVien(buoiUuTien) {
     $("svHint").textContent =
       st === "chua_mo" ? `Chưa đến giờ điểm danh. Mở lúc ${fGio(lop.moLuc)}. Bạn vẫn có thể báo vắng.`
       : st === "ket_thuc" ? "Buổi học đã kết thúc."
-      : muon ? `Đã quá ${muonSauPhut} phút so với giờ bắt đầu (${fGio(lop.batDau)}), hệ thống sẽ ghi nhận ĐI TRỄ. Cần bật GPS.`
-      : `Điểm danh "Có mặt" đến ${han}, sau đó tính "Đi trễ". Cần bật GPS.`;
+      : muon ? `Đã quá ${fGio(lop.batDau + muonSauPhut * 60000)} (giờ bắt đầu ${fGio(lop.batDau)}), hệ thống sẽ ghi nhận ĐI TRỄ. Cần bật GPS.`
+      : `Điểm danh "Có mặt" đến hết ${han}, từ ${fGio(lop.batDau + (muonSauPhut + 1) * 60000)} tính "Đi trễ". Cần bật GPS.`;
   }
 
   function layTen() {
